@@ -10,7 +10,8 @@ int magSeven = 8;
 int magEight = 9;
 int magNine = 10;
 
-int magArray[9] = {magOne, magTwo, magThree, magFour, magFive, magSix, magSeven, magEight, magNine};
+int magArray[3][3] = {{magOne,magTwo,magThree}, {magFour,magFive,magSix}, {magSeven,magEight,magNine}};
+
 // LEDs. That's crazy.
 //A0 = 14, just as a little note here for myself
 int ledOne = 11;
@@ -22,21 +23,24 @@ int ledSix = 16;
 int ledSeven = 17;
 int ledEight = 18;
 int ledNine = 19;
-int ledArray[9] = {ledOne, ledTwo, ledThree, ledFour, ledFive, ledSix, ledSeven, ledEight, ledNine};
+int ledArray[3][3] = {{ledOne,ledTwo,ledThree}, {ledFour,ledFive,ledSix}, {ledSeven,ledEight,ledNine}};
 
 
 void setup() {
   // I'm using pullup because, in the testing, it made things more reliable. Arguably, we should also be using a capacitor, but I really kind of don't want to?
   // like it would probably help, and I can pretty easily swap it over to input if it doesn't work.
-  for (int curPin : magArray){
-    pinmode(curPin,INPUT_PULLUP);
+  for (int curRow : magArray){
+    for (int curCol: curRow){
+      pinmode(magArray[curRow,curCol],INPUT_PULLUP);
+    }
+    
   }
 
-  // there's probably a way to loop this, isn't there? I could like, declare a list of LEDs, and loop over it... and now I've thought too much about it.
-  // I started looping this. 
-
-  for (int ledPin : ledArray){
-    pinmode(ledPin,OUTPUT);
+ for (int curRow : ledArray){
+    for (int curCol: curRow){
+      pinmode(ledArray[curRow,curCol],OUTPUT);
+    }
+    
   }
 
 
