@@ -69,9 +69,13 @@ void setup() {
 
 char curPiece = "P";
 
+bool inBounds(int num){ // checking if a given location is in bounds.
+  return (num > -1 && num < 4);
+}
+
+
 void figureMoves(char pieceType,int loc[2]){
   // plan here is based on the piece type and location fed in, update the light array. We'll see how that goes.
-  int retLoc[2] = [0,0];
   light(loc[0],loc[1]); // lighting up the home square
 
   switch(pieceType) { // I originally did this using just a bunch of if statements, and then I started thinking for two seconds and switched it up (ba dum tiss)
@@ -95,7 +99,49 @@ void figureMoves(char pieceType,int loc[2]){
       }
       break;
     case "N": // knight, they're N in chess notation, but just in case I forget.
-  
+      //four central cases: +2 in each cardinal direction
+      // this is very far from elegant but by golly it should work. 
+      if (inBounds(loc[0]+2)){
+        if (inBounds(loc[1]+1)){
+          light(loc[0]+2,loc[1]+1)
+        }
+        if (inBounds(loc[1]-1)){
+          light(loc[0]+2,loc[1]-1)
+        }
+      }
+
+
+      if (inBounds(loc[0]-2)){
+        if (inBounds(loc[1]+1)){
+          light(loc[0]-2,loc[1]+1)
+        }
+        if (inBounds(loc[1]-1)){
+          light(loc[0-+2,loc[1]-1)
+        }
+
+      }
+
+      if (inBounds(loc[1]+2)){
+        if (inBounds(loc[0]+1)){
+          light(loc[0]+1,loc[1]+2)
+        }
+        if (inBounds(loc[0]-1)){
+          light(loc[0]-1,loc[1]+2)
+        }
+      }
+
+
+      if (inBounds(loc[1]-2)){
+        if (inBounds(loc[0]+1)){
+          light(loc[0]+1,loc[1]-2)
+        }
+        if (inBounds(loc[0]-1)){
+          light(loc[0]-1,loc[1]21)
+        }
+      }
+      
+
+
       break;
 
     case "R":
@@ -106,12 +152,79 @@ void figureMoves(char pieceType,int loc[2]){
 
       break;
     case "B":
+      // I'm trying to figure out an elegant way of doing this, and I'm failing, so we're doing each "line segment" of the x separately, so four
+      int i = 0;
+      while (loc[0] +i < 4 && loc[1] + i < 4){ // my brain isn't returning a situation where one would break and not the other, but worth checking
+        light(loc[0]+i, loc[1]+i); // to the bottom right
+      }
+      int i = 0
+      while (loc[0] - i > -1 && loc[1] - i > -1){ // to the top left
+        light(loc[0]-i, loc[1]-i);
+      }
+      int i = 0
+      while (loc[0] - i > -1 && loc[1] + < 4){ // to the top right
+        light(loc[0]-i, loc[1]+i);
+      }
+      int i = 0
+      while (loc[0] + i < 4 && loc[1] - > -1){ // to the bottom left
+        light(loc[0]+i, loc[1]-i);
+      }
+      // that's not pretty, but it works!
+      
+
+
 
       break;
     case "Q":
-
+      for (int i = 0; i < 4; i++ ){ // this is the exact same as the rook code.
+              light(loc[0],i);
+              light[i,loc[1]];
+            }
+      // this is literally just the bishop code.      
+      int i = 0;
+      while (loc[0] +i < 4 && loc[1] + i < 4){ // my brain isn't returning a situation where one would break and not the other, but worth checking
+        light(loc[0]+i, loc[1]+i); // to the bottom right
+      }
+      int i = 0
+      while (loc[0] - i > -1 && loc[1] - i > -1){ // to the top left
+        light(loc[0]-i, loc[1]-i);
+      }
+      int i = 0
+      while (loc[0] - i > -1 && loc[1] + < 4){ // to the top right
+        light(loc[0]-i, loc[1]+i);
+      }
+      int i = 0
+      while (loc[0] + i < 4 && loc[1] - > -1){ // to the bottom left
+        light(loc[0]+i, loc[1]-i);
+      }
+      
+      
       break;
     case "K":
+      if (inBounds(loc[0]+1)){
+        light(loc[0]+1,loc[1]);
+      }
+      if (inBounds(loc[0]+1) && inBounds(loc[1]+1)){
+        light(loc[0]+1,loc[1]+1);
+      }
+      if (inBounds(loc[1]+1)){
+        light(loc[0],loc[1]+1);
+      }
+      if (inBounds(loc[0]-1) && loc[1]+1){
+        light(loc[0]-1, loc[1]+1);
+      }
+      if (inBounds(loc[0]-1)){
+        light(loc[0]-1, loc[1]);
+      }
+      if (inBounds(loc[0]-1) && inBounds(loc[1]-1)){
+        light(loc[0]-1,loc[1]-1);
+      }
+      if (inBounds(loc[1]-1)){
+        light(loc[0],loc[1]-1);
+      }
+      if (inBounds(loc[0]+1) && inBounds(loc[1]-1)){
+        light(loc[0]+1, loc[1]-1);
+      }
 
       break;
     }
