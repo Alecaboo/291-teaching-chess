@@ -47,7 +47,7 @@ void setup() {
     
   }
 
- for (int curRow : ledArray){
+ for (int curRow  : ledArray){
     for (int curCol: curRow){
       pinmode(ledArray[curRow,curCol],OUTPUT);
     }
@@ -72,31 +72,80 @@ char curPiece = "P";
 void figureMoves(char pieceType,int loc[2]){
   // plan here is based on the piece type and location fed in, update the light array. We'll see how that goes.
   int retLoc[2] = [0,0];
-  if (pieceType == "P"){
-    light(loc[0]-1,loc[1]); // that's normal movement
-    // we're uh, playing pacifist chess right now. We're not gonna worry about attacking.
-  }
+  light(loc[0],loc[1]); // lighting up the home square
+
+  switch(pieceType) { // I originally did this using just a bunch of if statements, and then I started thinking for two seconds and switched it up (ba dum tiss)
+    case "P":
+      if (loc[0] == 0)
+      {
+        // we're going to need to do the promotion thing here but for now I'm just going to return and get out
+        return;
+      }
+      if (pieceArray[loc[0]+1][loc[1]] == "N"){ // if the space in front is empty, you can go forward 
+        light(loc[0]-1,loc[1]); 
+      }
+        
+      
+      // these are the attacking ones - not mutually exclusive.
+      if (pieceArray[loc[0]+1][loc[1]+1]!= "N" ){
+        light(loc[0]+1,loc[1]+1);
+      }
+      if (pieceArray[loc[0]+1][loc[1]-1] != "N"){
+        light(loc[0]+1,loc[1]-1);
+      }
+      break;
+    case "N": // knight, they're N in chess notation, but just in case I forget.
   
-  light(loc[0],loc[1]);
+      break;
+
+    case "R":
+      for (int i = 0; i < 4; i++ ){ // this... should work for a rook on an empty board. finding pieces in the way is going to come later, because I want a rough prototype to test.
+        light(loc[0],i);
+        light[i,loc[1]];
+      }
+
+      break;
+    case "B":
+
+      break;
+    case "Q":
+
+      break;
+    case "K":
+
+      break;
+    }
+  }
+
+  
 
 }
 
-void light(int row, int col){
+void light(int row, int col){ // this function does not need to exist. I'm just really lazy.
   digitalWrite(ledArray[row][col],HIGH);
 }
+
+bool changed = false; 
 
 void loop() {
   int oldState[3][3] = state; // toDo: make this actually copy the array (it has to be element by element)
   for (int curRow: state){
+    if (changed){
+      break;
+    }
     for (int curCol : curRow){
       state[curRow][curCol] = digitalRead(magArray[curRow][curCol]);
       int change = state[curRow][curCol] - oldState[curRow][curCol];
       int place[2] = {curRow,curCol};
+      if (change != 0){
+        changed = true;
+      }
       if ( change == -1){ // piece removed
-        lightBoard(pieceArray[curRow][curCol],place);
+        lightBoard(pieceArray[curRow][curCol],place); // if a piece is removed, call the lightboard function, because I don't want to nest all that in here
+        changed = true;
       }
       else if ( change == 1){ // piece placed
-        for( ledRow : ledArray){
+        for( ledRow : ledArray){ // if we put a piece down, knock all the lights out.
           for (ledCol: ledRow){
             digitalWrite(ledArray[ledRow][ledCol],LOW);
           }
@@ -104,7 +153,7 @@ void loop() {
       }
     }
   }
-  changed: 
+  changed = false;
 
   }
 
