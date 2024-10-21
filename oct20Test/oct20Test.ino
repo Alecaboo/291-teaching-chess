@@ -1,65 +1,59 @@
 // time to declare all of our pins! this is going off the tinkercad diagram at (https://www.tinkercad.com/things/2hayu8VoFnV-3x3-chess-grid?sharecode=CSrqqlocQqnvlNf2s-Q7EwOXBIaHyHPHCmI_gLgrOvU)
 
-int magOne = 4;
-int magTwo = 7;
-int magThree = 10;
+int magOne = 2;
+int magTwo = 3;
+int magThree = 4;
 
-int magFour = 3;
+int magFour = 5;
 int magFive = 6;
-int magSix = 9;
+int magSix = 7;
 
-int magSeven = 2;
-int magEight = 5;
-int magNine = 8;
+int magSeven = 8;
+int magEight = 9;
+int magNine = 10;
 
 int magArray[3][3] = {{magOne,magTwo,magThree}, {magFour,magFive,magSix}, {magSeven,magEight,magNine}};
 
 // LEDs. That's crazy.
 //A0 = 14, just as a little note here for myself
-int ledOne = 13;
-int ledTwo = 17;
+int ledOne = 16;
+int ledTwo = 15;
 int ledThree = 14;
 
-int ledFour = 12;
-int ledFive = 18;
-int ledSix = 15;
+int ledFour = 11;
+int ledFive = 12;
+int ledSix = 13;
 
-int ledSeven = 11;
-int ledEight = 19;
-int ledNine = 16;
+int ledSeven = 19;
+int ledEight = 18;
+int ledNine = 17;
 
 int ledArray[3][3] = {{ledOne,ledTwo,ledThree}, {ledFour,ledFive,ledSix}, {ledSeven,ledEight,ledNine}};
 
-char pieceArray[3][3] {{'N','N','N'},{'N','N','N'},{'N','P','N'}};
+char pieceArray[3][3] {{'V','V','V'},{'V','V','V'},{'V','N','V'}}; // blank piece array
+
+// char pieceArray[3][3] {{'N','N','N'},{'P','N','P'},{'N','P','N'}};
 
 int stateArray[3][3];
 
 
-void setup() {
-  // I'm using pullup because, in the testing, it made things more reliable. Arguably, we should also be using a capacitor, but I really kind of don't want to?
-  // like it would probably help, and I can pretty easily swap it over to input if it doesn't work.
-  
 
-for (int curRow = 0; curRow < 4; curRow++){
-  for (int curCol = 0; curCol < 4; curCol++){
-    pinMode(magArray[curRow][curCol],INPUT_PULLUP);
-    stateArray[curRow][curCol] = digitalRead(magArray[curRow][curCol]);
-    pinMode(ledArray[curRow,curCol],OUTPUT);
-  }
-}
-
-}
-
-char curPiece = 'P';
 
 bool inBounds(int num){ // checking if a given location is in bounds.
-  return (num > -1 && num < 4);
+  return (num > -1 && num < 3);
 }
 
 void light(int row, int col){ // this function does not need to exist. I'm just really lazy.
   digitalWrite(ledArray[row][col],HIGH);
 }
 
+void blackout(){
+  for (int row = 0; row < 3; row++){
+    for (int col = 0; col < 3; col++){
+      digitalWrite(ledArray[row][col],LOW);
+    }
+  }
+}
 
 void figureMoves(int loc[2]){
   // plan here is based on the piece type and location fed in, update the light array. We'll see how that goes.
@@ -219,47 +213,81 @@ void figureMoves(int loc[2]){
         }
 
       break;
+    case 'V':
+      digitalWrite(ledArray[loc[0]][loc[1]],LOW);
+      return;
     }
 
 }
 
 
 
-bool changed = false; 
+void setup() {
+  // I'm using pullup because, in the testing, it made things more reliable. Arguably, we should also be using a capacitor, but I really kind of don't want to?
+  // like it would probably help, and I can pretty easily swap it over to input if it doesn't work.
+Serial.begin(9600);
+
+for (int curRow = 0; curRow < 3; curRow++){
+  for (int curCol = 0; curCol < 3; curCol++){
+    pinMode(magArray[curRow][curCol],INPUT_PULLUP);
+    stateArray[curRow][curCol] = digitalRead(magArray[curRow][curCol]);
+    pinMode(ledArray[curRow,curCol],OUTPUT);
+  }
+
+}
+
+
+// I need to do this with user input, but for now testing because I'm traumatized, I'm just going to manually set these. Womp womp.
+  int rowChoice = 2;
+  int colChoice = 0;
+  char pieceChoice = 'K';
+  int locChoice[2] = {rowChoice, colChoice};
+  pieceArray[rowChoice][colChoice] = pieceChoice;
+  figureMoves(locChoice);
+
+  for (int curRow = 0; curRow < 3; curRow++){
+  for (int curCol = 0; curCol < 3; curCol++){
+    digitalWrite(ledArray[curRow][curCol],LOW);
+  }
+
+}
+
+//digitalWrite(ledArray[1][0],HIGH);
+}
+
+char curPiece = 'V';
 
 void loop() {
-   int oldState[3][3]; // toDo: make this actually copy the array (it has to be element by element)
-
-  for (int i = 0; i < 4; i++){
-    for (int j = 0; j < 4; j++){
-      oldState[i][j] = stateArray[i][j];
-    }
-  }
-
-
-  for (int curRow = 0; curRow < 4; curRow ++){
-    if (changed){
-      break;
-    }
-    for (int curCol = 0; curCol < 4; curCol ++){
-      stateArray[curRow][curCol] = digitalRead(magArray[curRow][curCol]);
-      int change = stateArray[curRow][curCol] - oldState[curRow][curCol];
-      int place[2] = {curRow,curCol};
-      if (change != 0){
-        changed = true;
-      }
-      if ( change == 1){ // piece removed
-        figureMoves(place); // if a piece is removed, call the lightboard function, because I don't want to nest all that in here
-        changed = true;
-      }
-      else if (change == -1){ // piece placed
-        for( int ledRow = 0; ledRow < 4; ledRow++){ // if we put a piece down, knock all the lights out.
-          for (int ledCol = 0; ledCol < 4; ledCol++){
-            digitalWrite(ledArray[ledRow][ledCol],LOW);
-          }
+  for (int curRow = 0; curRow < 3; curRow++){
+    for (int curCol = 0; curCol < 3; curCol++){
+      int swit = digitalRead(magArray[curRow][curCol]) - stateArray[curRow][curCol];
+      if (swit != 0){
+        int locChoice[2] = {curRow, curCol};
+        if (pieceArray[curRow][curCol] != 'V' && curPiece == 'V'){
+          curPiece = pieceArray[curRow][curCol];
         }
+
+        else if (pieceArray[curRow][curCol] == 'V' && curPiece != 'V'){
+          pieceArray[curRow][curCol] = curPiece;
+          blackout();
+          light(curRow,curCol);
+          break;
+          
+        }
+        /*
+        if (swit == 1){ // magnet placed on location
+
+        }
+        else if (swit == -1){ // magnet removed from location
+
+        }
+        */
+        figureMoves(locChoice);
       }
     }
   }
-  changed = false;
-  }
+
+
+
+
+}
