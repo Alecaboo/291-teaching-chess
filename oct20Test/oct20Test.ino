@@ -1,40 +1,78 @@
 // time to declare all of our pins! this is going off the tinkercad diagram at (https://www.tinkercad.com/things/2hayu8VoFnV-3x3-chess-grid?sharecode=CSrqqlocQqnvlNf2s-Q7EwOXBIaHyHPHCmI_gLgrOvU)
+/*
+// magnet pins
+  int magOne = 8;
+  int magTwo = 9;
+  int magThree = 10;
 
-int magOne = 8;
-int magTwo = 9;
-int magThree = 10;
+  int magFour = 5;
+  int magFive = 6;
+  int magSix = 7;
 
-int magFour = 5;
-int magFive = 6;
-int magSix = 7;
-
-int magSeven = 2;
-int magEight = 3;
-int magNine = 4;
-
-
-
-
-int magArray[3][3] = {{magOne,magTwo,magThree}, {magFour,magFive,magSix}, {magSeven,magEight,magNine}};
+  int magSeven = 2;
+  int magEight = 3;
+  int magNine = 4;
+  int magArray[3][3] = {{magOne,magTwo,magThree}, {magFour,magFive,magSix}, {magSeven,magEight,magNine}};
 
 // LEDs. That's crazy.
 //A0 = 14, just as a little note here for myself
-int ledOne = 16;
-int ledTwo = 15;
-int ledThree = 14;
+  int ledOne = 16;
+  int ledTwo = 15;
+  int ledThree = 14;
 
 
-int ledFour = 19;
-int ledFive = 18;
-int ledSix = 17;
+  int ledFour = 19;
+  int ledFive = 18;
+  int ledSix = 17;
 
-int ledSeven = 11;
-int ledEight = 12;
-int ledNine = 13;
+  int ledSeven = 11;
+  int ledEight = 12;
+  int ledNine = 13;
 
 
-int ledArray[3][3] = {{ledOne,ledTwo,ledThree}, {ledFour,ledFive,ledSix}, {ledSeven,ledEight,ledNine}};
+  int ledArray[3][3] = {{ledOne,ledTwo,ledThree}, {ledFour,ledFive,ledSix}, {ledSeven,ledEight,ledNine}};
+
+*/
+// magnet pins
+  int magSeven = 8;
+  int magEight = 9;
+  int magNine = 10;
+
+  int magFour = 5;
+  int magFive = 6;
+  int magSix = 7;
+
+  int magOne = 2;
+  int magTwo = 3;
+  int magThree = 4;
+  int magArray[3][3] = {{magOne,magTwo,magThree}, {magFour,magFive,magSix}, {magSeven,magEight,magNine}};
+
+// LEDs. That's crazy.
+  //A0 = 14, just as a little note here for myself
+  int ledOne = 16;
+  int ledTwo = 15;
+  int ledThree = 14;
+
+
+  int ledSeven = 19;
+  int ledEight = 18;
+  int ledNine = 17;
+
+  int ledFour = 11;
+  int ledFive = 12;
+  int ledSix = 13;
+
+
+  int ledArray[3][3] = {{ledOne,ledTwo,ledThree}, {ledFour,ledFive,ledSix}, {ledSeven,ledEight,ledNine}};
+
+
+
+
+
+
 int ledStateArray[3][3] = {{0,0,0},{0,0,0},{0,0,0}};
+
+
 
 char pieceArray[3][3] {{'V','V','V'},{'V','V','V'},{'V','R','V'}}; // blank piece array
 
@@ -261,9 +299,10 @@ void loop() {
   for (int curRow = 0; curRow < 3; curRow++){
     for (int curCol = 0; curCol < 3; curCol++){
       int swit = digitalRead(magArray[curRow][curCol]) - stateArray[curRow][curCol];
+      int locChoice[2] = {curRow, curCol};
       if (swit != 0 && ledStateArray[curRow][curCol] == 1){
         blackout();
-        int locChoice[2] = {curRow, curCol};
+        
         if (pieceArray[curRow][curCol] != 'V' && curPiece == 'V'){
           curPiece = pieceArray[curRow][curCol];
           
@@ -277,14 +316,6 @@ void loop() {
           
         }
         figureMoves(locChoice);
-        /*
-        if (swit == 1){ // magnet placed on location
-
-        }
-        else if (swit == -1){ // magnet removed from location
-
-        }
-        */
       
       }
     }
