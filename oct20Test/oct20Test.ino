@@ -230,7 +230,7 @@ for (int curRow = 0; curRow < 3; curRow++){
   for (int curCol = 0; curCol < 3; curCol++){
     pinMode(magArray[curRow][curCol],INPUT_PULLUP);
     stateArray[curRow][curCol] = digitalRead(magArray[curRow][curCol]);
-    pinMode(ledArray[curRow,curCol],OUTPUT);
+    pinMode(ledArray[curRow][curCol],OUTPUT);
   }
 
 }
