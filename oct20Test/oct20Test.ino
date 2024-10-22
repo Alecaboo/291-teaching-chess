@@ -1,16 +1,19 @@
 // time to declare all of our pins! this is going off the tinkercad diagram at (https://www.tinkercad.com/things/2hayu8VoFnV-3x3-chess-grid?sharecode=CSrqqlocQqnvlNf2s-Q7EwOXBIaHyHPHCmI_gLgrOvU)
 
-int magOne = 2;
-int magTwo = 3;
-int magThree = 4;
+int magOne = 8;
+int magTwo = 9;
+int magThree = 10;
 
 int magFour = 5;
 int magFive = 6;
 int magSix = 7;
 
-int magSeven = 8;
-int magEight = 9;
-int magNine = 10;
+int magSeven = 2;
+int magEight = 3;
+int magNine = 4;
+
+
+
 
 int magArray[3][3] = {{magOne,magTwo,magThree}, {magFour,magFive,magSix}, {magSeven,magEight,magNine}};
 
@@ -20,17 +23,20 @@ int ledOne = 16;
 int ledTwo = 15;
 int ledThree = 14;
 
-int ledFour = 11;
-int ledFive = 12;
-int ledSix = 13;
 
-int ledSeven = 19;
-int ledEight = 18;
-int ledNine = 17;
+int ledFour = 19;
+int ledFive = 18;
+int ledSix = 17;
+
+int ledSeven = 11;
+int ledEight = 12;
+int ledNine = 13;
+
 
 int ledArray[3][3] = {{ledOne,ledTwo,ledThree}, {ledFour,ledFive,ledSix}, {ledSeven,ledEight,ledNine}};
+int ledStateArray[3][3] = {{0,0,0},{0,0,0},{0,0,0}};
 
-char pieceArray[3][3] {{'V','V','V'},{'V','V','V'},{'V','V','V'}}; // blank piece array
+char pieceArray[3][3] {{'V','V','V'},{'V','V','V'},{'V','R','V'}}; // blank piece array
 
 
 int stateArray[3][3];
@@ -44,12 +50,14 @@ bool inBounds(int num){ // checking if a given location is in bounds.
 
 void light(int row, int col){ // this function does not need to exist. I'm just really lazy.
   digitalWrite(ledArray[row][col],HIGH);
+  ledStateArray[row][col]= 1;
 }
 
 void blackout(){
   for (int row = 0; row < 3; row++){
     for (int col = 0; col < 3; col++){
       digitalWrite(ledArray[row][col],LOW);
+      ledStateArray[row][col] = 0;
     }
   }
 }
@@ -214,6 +222,7 @@ void figureMoves(int loc[2]){
       break;
     case 'V':
       digitalWrite(ledArray[loc[0]][loc[1]],LOW);
+      ledStateArray[loc[0]][loc[1]] = 0;
       return;
     }
 
@@ -229,26 +238,22 @@ Serial.begin(9600);
 for (int curRow = 0; curRow < 3; curRow++){
   for (int curCol = 0; curCol < 3; curCol++){
     pinMode(magArray[curRow][curCol],INPUT_PULLUP);
-    stateArray[curRow][curCol] = digitalRead(magArray[curRow][curCol]);
+    int state = digitalRead(magArray[curRow][curCol]);
+    stateArray[curRow][curCol] = state;
+    
     pinMode(ledArray[curRow][curCol],OUTPUT);
+    if (pieceArray[curRow][curCol] != 'V'){
+      light(curRow,curCol);
+    }
   }
 
 }
 
 
 // I need to do this with user input, but for now testing because I'm traumatized, I'm just going to manually set these. Womp womp.
-  int rowChoice = 2;
-  int colChoice = 0;
-  char pieceChoice = 'N';
-  int locChoice[2] = {rowChoice, colChoice};
-  pieceArray[rowChoice][colChoice] = pieceChoice;
-  figureMoves(locChoice);
-
-  blackout();
-
+  
 }
 
-//digitalWrite(ledArray[1][0],HIGH);
 
 char curPiece = 'V';
 
@@ -256,19 +261,22 @@ void loop() {
   for (int curRow = 0; curRow < 3; curRow++){
     for (int curCol = 0; curCol < 3; curCol++){
       int swit = digitalRead(magArray[curRow][curCol]) - stateArray[curRow][curCol];
-      if (swit != 0){
+      if (swit != 0 && ledStateArray[curRow][curCol] == 1){
+        blackout();
         int locChoice[2] = {curRow, curCol};
         if (pieceArray[curRow][curCol] != 'V' && curPiece == 'V'){
           curPiece = pieceArray[curRow][curCol];
+          
         }
 
         else if (pieceArray[curRow][curCol] == 'V' && curPiece != 'V'){
           pieceArray[curRow][curCol] = curPiece;
           blackout();
           light(curRow,curCol);
-          break;
+          
           
         }
+        figureMoves(locChoice);
         /*
         if (swit == 1){ // magnet placed on location
 
@@ -277,7 +285,7 @@ void loop() {
 
         }
         */
-        figureMoves(locChoice);
+      
       }
     }
   }
