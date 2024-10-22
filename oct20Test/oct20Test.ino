@@ -30,9 +30,8 @@ int ledNine = 17;
 
 int ledArray[3][3] = {{ledOne,ledTwo,ledThree}, {ledFour,ledFive,ledSix}, {ledSeven,ledEight,ledNine}};
 
-char pieceArray[3][3] {{'V','V','V'},{'V','V','V'},{'V','N','V'}}; // blank piece array
+char pieceArray[3][3] {{'V','V','V'},{'V','V','V'},{'V','V','V'}}; // blank piece array
 
-// char pieceArray[3][3] {{'N','N','N'},{'P','N','P'},{'N','P','N'}};
 
 int stateArray[3][3];
 
@@ -240,20 +239,16 @@ for (int curRow = 0; curRow < 3; curRow++){
 // I need to do this with user input, but for now testing because I'm traumatized, I'm just going to manually set these. Womp womp.
   int rowChoice = 2;
   int colChoice = 0;
-  char pieceChoice = 'K';
+  char pieceChoice = 'N';
   int locChoice[2] = {rowChoice, colChoice};
   pieceArray[rowChoice][colChoice] = pieceChoice;
   figureMoves(locChoice);
 
-  for (int curRow = 0; curRow < 3; curRow++){
-  for (int curCol = 0; curCol < 3; curCol++){
-    digitalWrite(ledArray[curRow][curCol],LOW);
-  }
+  blackout();
 
 }
 
 //digitalWrite(ledArray[1][0],HIGH);
-}
 
 char curPiece = 'V';
 
