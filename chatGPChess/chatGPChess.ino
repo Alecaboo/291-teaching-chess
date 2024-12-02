@@ -206,47 +206,30 @@ void setup() {
 void loop() {
 
 
-blackout();
-
-int row = 1;
-int col = 1;
-Piece testPiece('B','Q');
-//board[row][col].piece = testPiece;
-for (int row = 0; row < 8; row++){
-  for (int col = 0; col < 8; col++){
-    figureMoves(board[row][col].piece,board[row][col]);
-    for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++) {
-      Serial.print(bigLED[i][j]);
-      if (j < 7) Serial.print(", ");
-    }
-    Serial.println();
-  }
-  Serial.println("---");
-  delay(500);
-  blackout();
-  }
-}
 
 
-/*
-  // "Go over the whole board" type beat.
+// example code to iterate over the whole board and check moves, which seems to work perfectly fine
+  /*
+  Piece testPiece('B','Q');
+  //board[row][col].piece = testPiece;
   for (int row = 0; row < 8; row++){
     for (int col = 0; col < 8; col++){
-      blackout();
-      bigLED[row][col] = 'P';
-        for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++) {
-      Serial.print(bigLED[i][j]);
-      if (j < 7) Serial.print(", ");
+      figureMoves(board[row][col].piece,board[row][col]);
+      for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        Serial.print(bigLED[i][j]);
+        if (j < 7) Serial.print(", ");
+      }
+      Serial.println();
     }
-    Serial.println();
-  }
-  Serial.println("---");
-  delay(10);
+    Serial.println("---");
+    delay(500);
+    blackout();
     }
   }
   */
-  // Print the LED board
+// the fun part.
+
+
 
 }

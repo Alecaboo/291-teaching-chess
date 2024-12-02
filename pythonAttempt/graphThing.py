@@ -10,7 +10,7 @@ baud_rate = 9600
 ser = serial.Serial(arduino_port, baud_rate)
 
 # Grid dimensions
-grid_size = 8
+grid_size = 3
 square_size = 1
 
 # Create a figure and axes
@@ -61,9 +61,9 @@ def update(frame):
             # Map char inputs to colors
             char = data[i][j]
 
-            if char == 'R':
+            if char == 'R' or char == '1':
                 rects[i][j].set_facecolor('red')  
-            elif char == 'G':
+            elif char == 'G' or char == '0':
                 rects[i][j].set_facecolor('green') 
             elif char == 'B':
                 rects[i][j].set_facecolor('blue') 
@@ -71,6 +71,8 @@ def update(frame):
                 rects[i][j].set_facecolor('none')  # No color
             elif char == 'P':
                 rects[i][j].set_facecolor('pink') 
+            else:
+                rects[i][j].set_facecolor('yellow')
 
 # Create the animation
 ani = animation.FuncAnimation(fig, update, interval=500)
