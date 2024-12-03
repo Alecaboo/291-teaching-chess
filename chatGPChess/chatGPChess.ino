@@ -7,6 +7,21 @@ const int kingMoves[9][2] = {{0,1}, {1,1}, {1,0}, {1,-1}, {0,-1}, {-1,-1}, {0,-1
 const int knightMoves[8][2] = {{2,1}, {2,-1}, {-2,1}, {-2,-1}, {1,2}, {-1,2}, {1,-2}, {-1,-2}};
 const int pawnMoves[3][2] = {{1,0}, {1,1}, {1,-1}};
 
+// All the pins - straight ripped from the test sketch.
+// PL pin 1
+int load = 7;
+// CE pin 15
+int clockEnablePin = 4;
+int clockTwo = 3;
+// Q7 pin 7
+int dataIn = 5;
+int dataTwo = 8;
+
+// CP pin 2
+int clockIn = 6;
+
+
+
 bool inBounds(int num) {
   return num >= 0 && num < 8;
 }
@@ -22,8 +37,10 @@ public:
   // Default constructor
   Piece() : hasMoved(false), color('N'), type('V') {}
 };
+Piece dummyPiece('N','V');
 
 class Square {
+
 public:
   int row, col;
   Piece piece;
@@ -197,19 +214,72 @@ case 'Q': // Queen (combines Rook and Bishop logic)
   }
 }
 
+int rowState[8] = {2,2,2,2,2,2,2,2};
+int colState[8] = {2,2,2,2,2,2,2,2};
+
+
+int states[8][8];
+int oldStates[8][8];
+
 void setup() {
   Serial.begin(9600);
   setupChessBoard();
   blackout();
+  pinMode(load, OUTPUT);
+  pinMode(clockEnablePin, OUTPUT);
+  pinMode(clockIn, OUTPUT);
+  pinMode(dataIn, INPUT);
+  pinMode(clockTwo,OUTPUT);
+  pinMode(dataTwo,INPUT);
+
+  // going to initialize the old state array here. I think? probably?
+
+  digitalWrite(load, LOW);
+  delayMicroseconds(5);
+  digitalWrite(load, HIGH);
+  delayMicroseconds(5);
+ 
+  // Get data from 74HC165
+  digitalWrite(clockEnablePin, LOW);
+  for(int i = 0; i < 8; i++){
+    digitalWrite(clockEnablePin,HIGH);
+    rowState[i] = digitalRead(dataIn);
+    digitalWrite(clockEnablePin,LOW);
+  }
+  
+
+  for(int i = 0; i < 8; i++){
+    digitalWrite(clockTwo,HIGH);
+    colState[i] = digitalRead(dataIn);
+    digitalWrite(clockEnablePin,LOW);
+  }
+  digitalWrite(clockTwo,HIGH);
+
+  for (int i = 0; i < 8; i++){
+    for (int j = 0; j < 8; j++){
+      if (rowState[i] == 1 == colState[j]){
+        states[i][j] = 1;
+      }
+      else{
+        states[i][j] = 0;
+      }
+    }
+  }
+
 }
 
+
+Piece pickedPiece;
+int pickedRow;
+int pickedCol;
 void loop() {
 
 
+  blackout();
 
 
 // example code to iterate over the whole board and check moves, which seems to work perfectly fine
-  /*
+/*
   Piece testPiece('B','Q');
   //board[row][col].piece = testPiece;
   for (int row = 0; row < 8; row++){
@@ -229,7 +299,70 @@ void loop() {
   }
   */
 // the fun part.
+ 
+// this whole part is just *reading* the damn array.
+  // Write pulse to load pin
+  digitalWrite(load, LOW);
+  delayMicroseconds(5);
+  digitalWrite(load, HIGH);
+  delayMicroseconds(5);
+ 
+  // Get data from 74HC165
+  digitalWrite(clockEnablePin, LOW);
+  for(int i = 0; i < 8; i++){
+    digitalWrite(clockEnablePin,HIGH);
+    rowState[i] = digitalRead(dataIn);
+    digitalWrite(clockEnablePin,LOW);
+  }
+  
 
+  for(int i = 0; i < 8; i++){
+    digitalWrite(clockTwo,HIGH);
+    colState[i] = digitalRead(dataIn);
+    digitalWrite(clockEnablePin,LOW);
+  }
+  digitalWrite(clockTwo,HIGH);
+
+  for (int i = 0; i < 8; i++){ // setting the current read to be what's actually happening
+    for (int j = 0; j < 8; j++){
+      if (rowState[i] == 1 == colState[j]){
+        states[i][j] = 1;
+      }
+      else{
+        states[i][j] = 0;
+      }
+    }
+  }
+  int changeRow;
+  int changeCol;
+  for (int row = 0; row < 8; row++){
+    for (int col = 0; col < 8; col++){
+      if (states[row][col] != oldStates[row][col]){
+        changeRow = row;
+        changeCol = col;
+        break;
+      }
+    }
+  }
+
+  if (oldStates[changeRow][changeCol] - states[changeRow][changeCol] == 1){
+    figureMoves(board[changeRow][changeCol].piece,board[changeRow][changeCol]);
+    pickedPiece = board[changeRow][changeCol].piece;
+    pickedRow = changeRow;
+    pickedCol = changeCol;
+  }
+  else if (oldStates[changeRow][changeCol] - states[changeRow][changeCol] == -1){
+    blackout();
+    board[changeRow][changeCol].piece = pickedPiece;
+    board[pickedRow][pickedCol].piece = dummyPiece;
+  }
+
+
+  for (int i = 0; i < 8; i++){ // populating the old state with whatever the changes were
+    for(int j = 0; j < 8; j++){
+      oldStates[i][j] = states[i][j];
+    }
+  }
 
 
 }
