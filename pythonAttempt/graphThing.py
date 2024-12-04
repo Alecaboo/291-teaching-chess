@@ -5,12 +5,12 @@ import matplotlib.patches as patches
 import matplotlib.animation as animation
 
 # Set up the serial connection
-arduino_port = '/dev/cu.usbmodem1201'  # make good port
-baud_rate = 9600
+arduino_port = '/dev/cu.usbmodem21201'  # Set this to whatever port the Arduino thinks it's connected to
+baud_rate = 9600 # Same baud you set with Serial.begin in arduino (I just like 9600)
 ser = serial.Serial(arduino_port, baud_rate)
 
 # Grid dimensions
-grid_size = 3
+grid_size = 8
 square_size = 1
 
 # Create a figure and axes
@@ -56,6 +56,7 @@ def read_array_from_serial():
 def update(frame):
     """Update the grid colors based on new data."""
     data = read_array_from_serial()
+    print(data)
     for i in range(grid_size):
         for j in range(grid_size):
             # Map char inputs to colors
@@ -63,7 +64,7 @@ def update(frame):
 
             if char == 'R' or char == '1':
                 rects[i][j].set_facecolor('red')  
-            elif char == 'G' or char == '0':
+            elif char == 'G' or char == '0' or char == '48':
                 rects[i][j].set_facecolor('green') 
             elif char == 'B':
                 rects[i][j].set_facecolor('blue') 

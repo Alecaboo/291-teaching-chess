@@ -1,22 +1,28 @@
-/* 
-  74HC165 Shift Register Demonstration 1
-  74hc165-demo.ino
-  Read from 8 switches and display values on serial monitor
- 
-  DroneBot Workshop 2020
-  https://dronebotworkshop.com
+/*
+  Code partially sourced from DroneBotWorkShop, chatGPT, and potential divine intervention. Wish I knew what I wrote at 3am.
+
 */
  
 // Define Connections to 74HC165
- 
+int states[8][8]; 
+
+void blackout() {
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      states[i][j] = '0'; // Neutral (off) state
+    }
+  }
+}
+
+
 // PL pin 1
 int load = 7;
 // CE pin 15
 int clockEnablePin = 4;
-int clockTwo = 3;
 // Q7 pin 7
 int dataIn = 5;
 int dataTwo = 8;
+int clockTwo = 3;
 
 // CP pin 2
 int clockIn = 6;
@@ -34,13 +40,14 @@ void setup()
   pinMode(dataIn, INPUT);
   pinMode(clockTwo,OUTPUT);
   pinMode(dataTwo,INPUT);
+  blackout();
 }
 
 int rowState[8] = {2,2,2,2,2,2,2,2};
 int colState[8] = {2,2,2,2,2,2,2,2};
 
 
-int states[8][8];
+
 
 void loop()
 {
@@ -54,21 +61,31 @@ void loop()
   // Get data from 74HC165
   digitalWrite(clockEnablePin, LOW);
   for(int i = 0; i < 8; i++){
-    digitalWrite(clockEnablePin,HIGH);
+    digitalWrite(clockIn,HIGH);
+    delay(5);
     rowState[i] = digitalRead(dataIn);
-    digitalWrite(clockEnablePin,LOW);
+    //Serial.print(digitalRead(dataIn));
+    digitalWrite(clockIn,LOW);
   }
-  
+  //Serial.print("\n");
+  digitalWrite(load, LOW);
+  delayMicroseconds(5);
+  digitalWrite(load, HIGH);
+  delayMicroseconds(5);
 
   for(int i = 0; i < 8; i++){
-    digitalWrite(clockTwo,HIGH);
-    colState[i] = digitalRead(dataIn);
-    digitalWrite(clockEnablePin,LOW);
+    digitalWrite(clockIn,HIGH);
+    delay(5);
+    colState[i] = digitalRead(dataTwo);
+    //Serial.print(digitalRead(dataTwo));
+    digitalWrite(clockIn,LOW);
   }
-  digitalWrite(clockTwo,HIGH);
-
-  for (int i = 0; i < 8; i++){
+  //Serial.println(colState);
+  digitalWrite(clockEnablePin,HIGH);
+  /*
+  for (int i = 0; i <8 ; i++){
     for (int j = 0; j < 8; j++){
+      //Serial.print
       if (rowState[i] == 1 == colState[j]){
         states[i][j] = 1;
       }
@@ -77,18 +94,44 @@ void loop()
       }
     }
   }
+  */
+  int foundRow = 9;
+  int foundCol = 9;
+  for (int i = 0; i < 8; i++){
+    if (rowState[i] == 1){
+      foundRow = i;
+    }
+    if (colState[i] == 1){
+      foundCol = i;
+    }
+  }
+  delay(200);
+  if (foundRow != 9 && foundCol != 9){
+      states[foundRow][foundCol] = 1;
+  }
+
+  /*
+  Serial.print(foundRow);
+  Serial.print(foundCol);
+  Serial.println();
+  */
+  
 
 // outputting to the serial, so I can test visualizing.
 for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
-        Serial.print(bigLED[i][j]);
+        Serial.print(states[i][j]);
         if (j < 7) Serial.print(", ");
+        //states[foundRow][foundCol] = 0;
       }
       Serial.println();
     }
     Serial.println("---");
-    delay(500);
 
   // Print to serial monitor
   delay(200);
+  
+  delay(200);
+  blackout();
 }
+
